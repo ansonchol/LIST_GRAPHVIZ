@@ -54,7 +54,7 @@ void List_Init(List* list)
 {
     assert(list);
 
-    list->max_size = 30;
+    list->max_size = 20;
 
     list->data = (int*)calloc(list->max_size, sizeof(int));
     list->next = (int*)calloc(list->max_size, sizeof(int));
@@ -162,4 +162,143 @@ void List_destroy(List* list)
     list->head = 0;
     list->tail = 0;
     list->count_elem = 0;
+}
+
+// --------------------------GRAPHVIZ----------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+
+#include "list.h"
+
+// ... (код List_Init, List_push, List_pop, print_list и т.д. остается без изменений) ...
+
+
+// -------------------------- GRAPHVIZ (ТОЛЬКО ГРАФ) --------------------------
+void List_export_dot(List list, const char* file_dot, DotConfig cfg)
+{
+    FILE* graph = fopen(file_dot, "w");
+    if (graph == NULL) { printf("ERROR: cannot open %s\n", file_dot); return; }
+
+    fprintf(graph,
+    "digraph {\n"
+    "   rankdir = LR;\n"
+    "   splines = ortho;\n"
+    "   nodesep = %f;\n"
+    "   ranksep = %f;\n"
+    "   node [color=\"%s\", fontsize=%d, shape=record];\n"
+    "   edge [color=\"%s\", arrowhead=\"vee\", arrowsize = 1.0];\n",
+    cfg.nodesep, cfg.ranksep, cfg.node_color, cfg.font_size, cfg.edge_color);
+
+    for (int i = 0; i < list.max_size; i++)
+    {
+        if (list.next[i] == EMPTY)
+        {
+            fprintf(graph,
+            "   element%d [label=\"[%d]\\nfree\", style=filled, fillcolor=\"#eeeeee\", fontcolor=\"#888888\"];\n",
+            i, i);
+        }
+        else
+        {
+            fprintf(graph,
+            "   element%d [label=\"[%d]\\ndata: %d | next: %d | prev: %d\"];\n",
+            i, i, list.data[i], list.next[i], list.prev[i]);
+        }
+    }
+
+    // 2. НЕВИДИМАЯ цепочка для ВСЕХ узлов
+    for (int i = 0; i < list.max_size - 1; i++)
+    {
+        fprintf(graph, "   element%d -> element%d [style=invis];\n", i, i + 1);
+    }
+
+    // 3. Рёбра next/prev только для занятых ячеек
+    for (int i = 0; i < list.max_size; i++)
+    {
+        if (list.data[i] == EMPTY) continue;
+
+        fprintf(graph, "   element%d -> element%d [color=\"%s\", constraint=false];\n", i, list.next[i], cfg.edge_color);
+        fprintf(graph, "   element%d -> element%d [color=\"%s\", style=dashed, constraint=false, dir=forward];\n", i, list.prev[i], cfg.prev_color);
+    }
+
+    fprintf(graph, "}\n");
+    fclose(graph);
+}
+
+
+// -------------------------- ГЕНЕРАЦИЯ HTML --------------------------
+void List_export_html(List list, const char* file_html, HtmlConfig cfg)
+{
+    FILE* html = fopen(file_html, "w");
+    if (html == NULL) { printf("ERROR: cannot open %s\n", file_html); return; }
+
+    // 1. Шапка и стили
+    fprintf(html,
+    "<!DOCTYPE html>\n"
+    "<html>\n<head>\n"
+    "   <meta charset=\"utf-8\">\n"
+    "   <title>%s</title>\n"
+    "   <style>\n"
+    "       body { %s }\n"
+    "       table { %s }\n"
+    "       th, td { %s }\n"
+    "       th { %s }\n"
+    "       .free { %s }\n"
+    "       .graph-container { %s }\n"
+    "       .graph-container img { %s }\n"
+    "   </style>\n"
+    "</head>\n<body>\n",
+    cfg.title, cfg.css_body, cfg.css_table, cfg.css_cell,
+    cfg.css_th, cfg.css_free_td, cfg.css_graph_div, cfg.css_graph_img);
+
+    // 2. Таблица
+    fprintf(html, "   <h2>%s</h2>\n", cfg.header_table);
+    fprintf(html, "   <table>\n");
+
+    // Строка index
+    fprintf(html, "       <tr><th>index</th>");
+    for (int i = 0; i < list.max_size; i++)
+        fprintf(html, "<th>%d</th>", i);
+    fprintf(html, "</tr>\n");
+
+    // Строка data
+    fprintf(html, "       <tr><th>data</th>");
+    for (int i = 0; i < list.max_size; i++) {
+        if (list.next[i] == EMPTY)
+            fprintf(html, "<td class=\"free\">-</td>");
+        else fprintf(html, "<td>%d</td>", list.data[i]);
+    }
+    fprintf(html, "</tr>\n");
+
+    // Строка next
+    fprintf(html, "       <tr><th>next</th>");
+    for (int i = 0; i < list.max_size; i++) {
+        if (list.next[i] == EMPTY)
+            fprintf(html, "<td class=\"free\">-</td>");
+        else fprintf(html, "<td>%d</td>", list.next[i]);
+    }
+    fprintf(html, "</tr>\n");
+
+    // Строка prev
+    fprintf(html, "       <tr><th>prev</th>");
+    for (int i = 0; i < list.max_size; i++) {
+        if (list.prev[i] == EMPTY)
+            fprintf(html, "<td class=\"free\">-</td>");
+        else fprintf(html, "<td>%d</td>", list.prev[i]);
+    }
+    fprintf(html, "</tr>\n");
+
+    fprintf(html, "   </table>\n");
+
+    // 3. Граф
+    fprintf(html, "   <h2>%s</h2>\n", cfg.header_graph);
+    fprintf(html,
+    "   <div class=\"graph-container\">\n"
+    "       <img src=\"%s\" alt=\"Graphviz Graph\">\n"
+    "   </div>\n",
+    cfg.graph_file);
+
+    fprintf(html, "</body>\n</html>\n");
+    fclose(html);
 }
