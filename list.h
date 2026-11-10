@@ -42,6 +42,15 @@ typedef struct HtmlConfig{
     const char* css_graph_img;
 } HtmlConfig;
 
+typedef struct FILE_graph
+{
+    const char* file_dot  = "graph.dot";
+    const char* file_html = "index.html";
+
+    FILE* dot;
+    FILE* html;
+} FILE_graph;
+
 void fill_empty(int value, int* array, int size);
 void print_list(List list);
 
@@ -50,7 +59,13 @@ void List_push(List* list, int value, int prev_ip);
 void List_pop(List* list, int ip);
 void List_destroy(List* list);
 
+void print_html_list(List list, const char* file_dot, DotConfig dot_cfg,
+                     const char* file_html, HtmlConfig html_cfg);
+
 void List_export_dot(List list, const char* file_dot, DotConfig cfg);
 void List_export_html(List list, const char* file_html, HtmlConfig cfg);
+
+void DUMP_begin(FILE_graph* graph);
+void DUMP_end(FILE_graph* graph);
 
 #endif

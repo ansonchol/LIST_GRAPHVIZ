@@ -5,7 +5,7 @@ digraph {
    ranksep = 0.600000;
    node [color="red", fontsize=14, shape=record];
    edge [color="darkgreen", arrowhead="vee", arrowsize = 1.0];
-   element0 [label="[0]\ndata: -1 | next: 1 | prev: 3"];
+   element0 [label="[0]\nfree", style=filled, fillcolor="#eeeeee", fontcolor="#888888"];
    element1 [label="[1]\ndata: 10 | next: 4 | prev: 0"];
    element2 [label="[2]\ndata: 20 | next: 3 | prev: 4"];
    element3 [label="[3]\ndata: 30 | next: 0 | prev: 2"];

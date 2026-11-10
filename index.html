@@ -4,22 +4,23 @@
    <meta charset="utf-8">
    <title>Моя структура данных</title>
    <style>
-       body { font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9; color: #333; }
+       body { font-family: Arial, sans-serif; padding: 20px; color: #333; background-image: url('bj.jpg'); background-repeat: no-repeat; background-size: 400px auto; background-position: left bottom; background-attachment: fixed; background-color: #f9f9f9; }
        table { border-collapse: collapse; margin-bottom: 30px; text-align: center; font-size: 14px; }
        th, td { border: 1px solid #333; padding: 8px 12px; min-width: 30px; }
        th { background-color: #e0e0e0; font-weight: bold; }
        .free { background-color: #eeeeee; color: #888888; }
        .graph-container { border: 1px solid #ccc; padding: 10px; background: #fff; overflow-x: auto; }
-       .graph-container img { min-width: 1000px; height: auto; }
+       .graph-container img { min-width: 500px; height: auto; }
    </style>
 </head>
 <body>
-   <h2>Внутреннее устройство массива</h2>
+HEAD: 1     TAIL: 3
+   <h2>Двусвязный список в виде массива</h2>
    <table>
        <tr><th>index</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th><th>17</th><th>18</th><th>19</th></tr>
-       <tr><th>data</th><td>-1</td><td>10</td><td>20</td><td>30</td><td>15</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td></tr>
-       <tr><th>next</th><td>1</td><td>4</td><td>3</td><td>0</td><td>2</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td></tr>
-       <tr><th>prev</th><td>3</td><td>0</td><td>4</td><td>2</td><td>1</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td></tr>
+       <tr><th>data</th><td class="free">-</td><td>10</td><td>20</td><td>30</td><td>15</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td></tr>
+       <tr><th>next</th><td class="free">-</td><td>4</td><td>3</td><td>0</td><td>2</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td></tr>
+       <tr><th>prev</th><td class="free">-</td><td>0</td><td>4</td><td>2</td><td>1</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td><td class="free">-</td></tr>
    </table>
    <h2>Связи между элементами</h2>
    <div class="graph-container">

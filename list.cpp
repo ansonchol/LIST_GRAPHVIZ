@@ -164,18 +164,16 @@ void List_destroy(List* list)
     list->count_elem = 0;
 }
 
-// --------------------------GRAPHVIZ----------------------------------
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+void print_html_list(List list, const char* file_dot, DotConfig dot_cfg,
+                     const char* file_html, HtmlConfig html_cfg)
+{
+    List_export_dot(list, file_dot, dot_cfg);
+    system("dot -Tsvg graph.dot -o graph.svg");
 
-#include "list.h"
+    List_export_html(list, file_html, html_cfg);
+}
 
-// ... (код List_Init, List_push, List_pop, print_list и т.д. остается без изменений) ...
-
-
-// -------------------------- GRAPHVIZ (ТОЛЬКО ГРАФ) --------------------------
+// -------------------------- GRAPHVIZ  -------------------------------------------
 void List_export_dot(List list, const char* file_dot, DotConfig cfg)
 {
     FILE* graph = fopen(file_dot, "w");
@@ -213,10 +211,10 @@ void List_export_dot(List list, const char* file_dot, DotConfig cfg)
         fprintf(graph, "   element%d -> element%d [style=invis];\n", i, i + 1);
     }
 
-    // 3. Рёбра next/prev только для занятых ячеек
+    // 3. Рёбра next/prev
     for (int i = 0; i < list.max_size; i++)
     {
-        if (list.data[i] == EMPTY) continue;
+        if (list.next[i] == EMPTY_PTR) continue;
 
         fprintf(graph, "   element%d -> element%d [color=\"%s\", constraint=false];\n", i, list.next[i], cfg.edge_color);
         fprintf(graph, "   element%d -> element%d [color=\"%s\", style=dashed, constraint=false, dir=forward];\n", i, list.prev[i], cfg.prev_color);
@@ -233,7 +231,6 @@ void List_export_html(List list, const char* file_html, HtmlConfig cfg)
     FILE* html = fopen(file_html, "w");
     if (html == NULL) { printf("ERROR: cannot open %s\n", file_html); return; }
 
-    // 1. Шапка и стили
     fprintf(html,
     "<!DOCTYPE html>\n"
     "<html>\n<head>\n"
@@ -252,6 +249,7 @@ void List_export_html(List list, const char* file_html, HtmlConfig cfg)
     cfg.title, cfg.css_body, cfg.css_table, cfg.css_cell,
     cfg.css_th, cfg.css_free_td, cfg.css_graph_div, cfg.css_graph_img);
 
+    fprintf(html, "HEAD: %d     TAIL: %d\n", list.head, list.tail);
     // 2. Таблица
     fprintf(html, "   <h2>%s</h2>\n", cfg.header_table);
     fprintf(html, "   <table>\n");
@@ -265,7 +263,7 @@ void List_export_html(List list, const char* file_html, HtmlConfig cfg)
     // Строка data
     fprintf(html, "       <tr><th>data</th>");
     for (int i = 0; i < list.max_size; i++) {
-        if (list.next[i] == EMPTY)
+        if (list.data[i] == EMPTY)
             fprintf(html, "<td class=\"free\">-</td>");
         else fprintf(html, "<td>%d</td>", list.data[i]);
     }
@@ -274,7 +272,7 @@ void List_export_html(List list, const char* file_html, HtmlConfig cfg)
     // Строка next
     fprintf(html, "       <tr><th>next</th>");
     for (int i = 0; i < list.max_size; i++) {
-        if (list.next[i] == EMPTY)
+        if (list.next[i] == EMPTY_PTR)
             fprintf(html, "<td class=\"free\">-</td>");
         else fprintf(html, "<td>%d</td>", list.next[i]);
     }
@@ -283,7 +281,7 @@ void List_export_html(List list, const char* file_html, HtmlConfig cfg)
     // Строка prev
     fprintf(html, "       <tr><th>prev</th>");
     for (int i = 0; i < list.max_size; i++) {
-        if (list.prev[i] == EMPTY)
+        if (list.prev[i] == EMPTY_PTR)
             fprintf(html, "<td class=\"free\">-</td>");
         else fprintf(html, "<td>%d</td>", list.prev[i]);
     }
@@ -301,4 +299,49 @@ void List_export_html(List list, const char* file_html, HtmlConfig cfg)
 
     fprintf(html, "</body>\n</html>\n");
     fclose(html);
+}
+
+//--------------------------------открытие и закрытие файлов---------------------
+void DUMP_begin(FILE_graph* graph)
+{
+    //очистка старого файла
+    graph->dot = fopen(graph->file_dot, "w");
+    if (graph->dot == NULL)
+    {
+        printf("ERROR: file %s doesn't exist", graph->file_dot);
+        return;
+    }
+
+    graph->html = fopen(graph->file_html, "w");
+    if (graph->html == NULL)
+    {
+        printf("ERROR: file %s doesn't exist", graph->file_html);
+        return;
+    }
+
+    fclose(graph->dot);
+    fclose(graph->html);
+
+    //Заполнение нового файла
+    graph->dot = fopen(graph->file_dot, "a");
+    if (graph->dot == NULL)
+    {
+        printf("ERROR: file %s doesn't exist", graph->file_dot);
+        return;
+    }
+
+    graph->html = fopen(graph->file_html, "a");
+    if (graph->html == NULL)
+    {
+        printf("ERROR: file %s doesn't exist", graph->file_html);
+        return;
+    }
+}
+
+void DUMP_end(FILE_graph* graph)
+{
+    assert(graph);
+
+    fclose(graph->dot);
+    fclose(graph->html);
 }
