@@ -5,11 +5,11 @@ digraph {
    ranksep = 0.600000;
    node [color="red", fontsize=14, shape=record];
    edge [color="darkgreen", arrowhead="vee", arrowsize = 1.0];
-   element0 [label="[0]\nfree", style=filled, fillcolor="#eeeeee", fontcolor="#888888"];
-   element1 [label="[1]\ndata: 10 | next: 4 | prev: 0"];
-   element2 [label="[2]\ndata: 20 | next: 3 | prev: 4"];
-   element3 [label="[3]\ndata: 30 | next: 0 | prev: 2"];
-   element4 [label="[4]\ndata: 15 | next: 2 | prev: 1"];
+   element0 [label="[0]\ndata: -1 | next: 1 | prev: 4"];
+   element1 [label="[1]\ndata: 10 | next: 3 | prev: 0"];
+   element2 [label="[2]\nfree", style=filled, fillcolor="#eeeeee", fontcolor="#888888"];
+   element3 [label="[3]\ndata: 30 | next: 4 | prev: 1"];
+   element4 [label="[4]\ndata: 15 | next: 0 | prev: 3"];
    element5 [label="[5]\nfree", style=filled, fillcolor="#eeeeee", fontcolor="#888888"];
    element6 [label="[6]\nfree", style=filled, fillcolor="#eeeeee", fontcolor="#888888"];
    element7 [label="[7]\nfree", style=filled, fillcolor="#eeeeee", fontcolor="#888888"];
@@ -44,12 +44,12 @@ digraph {
    element16 -> element17 [style=invis];
    element17 -> element18 [style=invis];
    element18 -> element19 [style=invis];
-   element1 -> element4 [color="darkgreen", constraint=false];
+   element0 -> element1 [color="darkgreen", constraint=false];
+   element0 -> element4 [color="red", style=dashed, constraint=false, dir=forward];
+   element1 -> element3 [color="darkgreen", constraint=false];
    element1 -> element0 [color="red", style=dashed, constraint=false, dir=forward];
-   element2 -> element3 [color="darkgreen", constraint=false];
-   element2 -> element4 [color="red", style=dashed, constraint=false, dir=forward];
-   element3 -> element0 [color="darkgreen", constraint=false];
-   element3 -> element2 [color="red", style=dashed, constraint=false, dir=forward];
-   element4 -> element2 [color="darkgreen", constraint=false];
-   element4 -> element1 [color="red", style=dashed, constraint=false, dir=forward];
+   element3 -> element4 [color="darkgreen", constraint=false];
+   element3 -> element1 [color="red", style=dashed, constraint=false, dir=forward];
+   element4 -> element0 [color="darkgreen", constraint=false];
+   element4 -> element3 [color="red", style=dashed, constraint=false, dir=forward];
 }
